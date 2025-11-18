@@ -1,0 +1,21 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: keycloak
+  mvc:
+    servlet:
+      path: /${spring.application.name}
+  jwt:
+    jwtSecretKey: ${JWT_SECRET_KEY}
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issue-uri: ${REALMS_URI}
+          jwk-set-uri: ${REALMS_URI}/protocol/openid-connect/certs
+  keycloak:
+    realm-name: ${REALM_NAME}
+    realm-url: ${REALM_AUTH_URL}
+    client-id: ${KEYCLOAK_CLIENT_ID}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET}

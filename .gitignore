@@ -1,0 +1,73 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Spring Boot specific
+target/
+
+# Gradle
+.gradle/
+!gradle-wrapper.jar
+gradle-app.setting
+**/build/
+**/out/
+
+# Cache
+*.cache
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Common binary files
+*.war
+*.jar
+
+# Ignore local config folder if exists
+/config/local/
+
+# Kotlin/Java
+*.kt~
+*.java~
+
+# Maven wrapper
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node modules (if frontend included)
+node_modules/
+
+# Ignore environment files
+.env
+*.env
+*/.env
