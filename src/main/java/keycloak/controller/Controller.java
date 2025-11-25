@@ -8,6 +8,7 @@ import keycloak.service.KeycloakService;
 import keycloak.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,19 +24,21 @@ public class Controller {
     }
 
     @PutMapping("update")
+    @PreAuthorize("hasRole('USER')")
     public APIResponse<Object> updateUser(@Valid @RequestBody UpdateUserRequest request){
         UserRepresentation response = keycloakService.updateUser(request);
         return APIResponse.builder().result(response).message("Update user API").build();
     }
 
     @DeleteMapping("delete")
+    @PreAuthorize("hasRole('USER')")
     public APIResponse<Object> deleteUser(String userId){
-        // find way to delete without id
         keycloakService.deleteUser(userId);
         return APIResponse.builder().message("Delete user API").build();
     }
 
     @GetMapping("me/{username}")
+    @PreAuthorize("hasRole('USER')")
     public APIResponse<Object> getUserByUsername(@PathVariable @NotBlank(message = "Username is required for this API") String username){
         FindUserByUsernameResponse<Object> response = keycloakService.getUserByUsername(username);
         return APIResponse.builder().result(response).message("Get user by username API").build();

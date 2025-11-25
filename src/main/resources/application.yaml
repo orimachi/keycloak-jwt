@@ -12,7 +12,7 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          issue-uri: ${REALMS_URI}
+          issuer-uri: ${REALMS_URI}
           jwk-set-uri: ${REALMS_URI}/protocol/openid-connect/certs
   keycloak:
     realm-name: ${REALM_NAME}
