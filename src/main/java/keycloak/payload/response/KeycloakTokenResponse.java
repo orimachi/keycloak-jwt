@@ -1,4 +1,4 @@
-package keycloak.payload;
+package keycloak.payload.response;
 
 import lombok.*;
 

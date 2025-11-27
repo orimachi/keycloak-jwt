@@ -1,4 +1,4 @@
-package keycloak.payload;
+package keycloak.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,7 +39,9 @@ public class IntrospectResponse {
     private String familyName;
 
     private Long exp;
+
     private Long iat;
+
     private String jti;
 
     @JsonProperty("client_id")

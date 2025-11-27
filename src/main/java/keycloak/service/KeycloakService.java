@@ -3,10 +3,10 @@ package keycloak.service;
 import jakarta.ws.rs.core.Response;
 import keycloak.enums.ERole;
 import keycloak.exception.CustomException;
-import keycloak.payload.FindUserByUsernameResponse;
-import keycloak.payload.RegisterUserRequest;
-import keycloak.payload.RegisterUserResponse;
-import keycloak.payload.UpdateUserRequest;
+import keycloak.payload.dto.UserDTO;
+import keycloak.payload.request.RegisterUserRequest;
+import keycloak.payload.response.RegisterUserResponse;
+import keycloak.payload.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
@@ -108,37 +108,50 @@ public class KeycloakService {
 
             response.close();
 
-            return RegisterUserResponse.builder().id(userId).email(request.getEmail()).roles(rolesToAssign).build();
+            return RegisterUserResponse.builder().id(userId).username(request.getUsername()).email(request.getEmail()).roles(rolesToAssign).build();
         } catch (Exception e){
             throw new CustomException("Error when register user", e);
         }
     }
 
-    public FindUserByUsernameResponse<Object> getUserByUsername(String username){
+    public UserDTO getUserByUsername(String username){
         try {
-           List<UserRepresentation> userRepresentations = keycloak.realm(realmName).users().search(username,true);
+            List<UserRepresentation> users = keycloak.realm(realmName).users().search(username, true);
 
-           UserResource userResource = keycloak.realm(realmName).users().get(userRepresentations.getFirst().getId());
-           List<String> roles = userResource.roles().realmLevel().listAll().stream()
-                   .map(RoleRepresentation::getName)
-                   .toList();
+            if (users.isEmpty()) {
+                throw new CustomException("User with username " + username + " not exist");
+            }
 
-            if (userRepresentations.isEmpty()){
-               log.error("User with username {} not exist", username);
-               throw new CustomException("User with username {} not exist");
-           }
-           return FindUserByUsernameResponse.builder().result(userRepresentations.getFirst()).roles(roles).build();
-        } catch (Exception e){
-            log.error("Error when find user with username: {}", e.getMessage(), e );
-            throw new CustomException("Error when find user:" + e.getMessage());
+            UserRepresentation rep = users.getFirst();
+
+            UserResource userResource = keycloak.realm(realmName).users().get(rep.getId());
+
+            List<String> roles = userResource.roles()
+                    .realmLevel()
+                    .listAll()
+                    .stream()
+                    .map(RoleRepresentation::getName)
+                    .toList();
+
+            return UserDTO.builder()
+                    .id(rep.getId())
+                    .username(rep.getUsername())
+                    .email(rep.getEmail())
+                    .firstName(rep.getFirstName())
+                    .lastName(rep.getLastName())
+                    .realmRoles(roles)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error when find user: {}", e.getMessage(), e);
+            throw new CustomException("Error when find user: " + e.getMessage());
         }
     }
 
-    public UserRepresentation updateUser(UpdateUserRequest request) {
+    public UserRepresentation updateUser(UpdateUserRequest request, String userId) {
         try {
-            String userId  = getUserIdByUsername(request.getUsername());
             if (userId == null){
-                throw new CustomException("User not found with username" + request.getUsername());
+                throw new CustomException("UserId is required!");
             }
 
             UserResource userResource = keycloak.realm(realmName).users().get(userId);
@@ -153,11 +166,20 @@ public class KeycloakService {
                 }
             }
 
+            if (request.getUsername() != null) user.setUsername(request.getUsername());
             if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
             if (request.getLastName() != null) user.setLastName(request.getLastName());
             if (request.getEmail() != null) {
                 user.setEmail(request.getEmail());
                 user.setEmailVerified(false);
+            }
+
+            if (request.getPassword() != null) {
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setTemporary(false);
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(request.getPassword());
+                userResource.resetPassword(credential);
             }
 
             userResource.update(user);
@@ -178,10 +200,5 @@ public class KeycloakService {
             log.error("Error when delete user: {}", e.getMessage(), e);
             throw new CustomException("Error when delete user: " + e.getMessage());
         }
-    }
-
-    public String getUserIdByUsername(String username){
-        List<UserRepresentation> userRepresentations = keycloak.realm(realmName).users().search(username,true);
-        return userRepresentations.getFirst().getId();
     }
 }

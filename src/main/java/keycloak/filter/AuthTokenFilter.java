@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -43,6 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 ));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 authentication.setDetails(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("authentication internal user {}", username);
             } else if (token != null) {
                 log.warn("Invalid or non-internal token");

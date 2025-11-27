@@ -40,7 +40,7 @@ public class OpenApiConfig {
                         .title(title)
                         .version(version)
                         .description(descriptionInfo)
-                        .contact(new Contact().name("Your Name").email("you@example.com"))
+                        .contact(new Contact().name("orimachi"))
                 )
                 .servers(List.of(new Server().url(serverUrl).description(descriptionServer)))
                 .components(new Components().addSecuritySchemes(securitySchemeName,new SecurityScheme().name("Authorization")

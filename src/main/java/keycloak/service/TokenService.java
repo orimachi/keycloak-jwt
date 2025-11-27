@@ -5,9 +5,9 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import keycloak.enums.ETokenType;
 import keycloak.exception.CustomException;
-import keycloak.payload.IntrospectResponse;
-import keycloak.payload.KeycloakTokenResponse;
-import keycloak.payload.LoginRequest;
+import keycloak.payload.response.IntrospectResponse;
+import keycloak.payload.response.KeycloakTokenResponse;
+import keycloak.payload.request.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,6 +149,7 @@ public class TokenService {
     public String generateInternalAccessToken(IntrospectResponse introspectResponse) {
         try {
             Map<String, Object> customClaims = new HashMap<>();
+            customClaims.put("ClientId", introspectResponse.getSub());
             customClaims.put("FullName", introspectResponse.getName());
             customClaims.put("Email", introspectResponse.getEmail());
             customClaims.put("TokenType", ETokenType.INTERNAL_ACCESS_TOKEN.toString());
@@ -169,7 +170,7 @@ public class TokenService {
                     .expiration(new Date(Instant.now().plus(3600000,ChronoUnit.SECONDS).toEpochMilli()))
                     .signWith(accessSecretKey())
                     .compact();
-        } catch (Exception e) {
+        } catch (Exception _) {
             throw new CustomException("Error");
         }
     }
@@ -230,6 +231,20 @@ public class TokenService {
 
     public String getUsernameFromToken(String token) {
         return getAllClaimsFromToken(token).getSubject();
+    }
+
+    public <T> T getClaim(String token, String claimName){
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(accessSecretKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return (T) claims.get(claimName);
+        } catch (Exception _) {
+            throw new CustomException("Invalid token: cannot read claim " + claimName);
+        }
     }
 
 }
