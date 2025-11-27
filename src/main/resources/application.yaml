@@ -1,21 +1,32 @@
 server:
-  port: 8081
+  port: 8888
 spring:
   application:
     name: keycloak
   mvc:
-    servlet:
-      path: /${spring.application.name}
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
   jwt:
     jwtSecretKey: ${JWT_SECRET_KEY}
   security:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: ${REALMS_URI}
-          jwk-set-uri: ${REALMS_URI}/protocol/openid-connect/certs
+          issuer-uri: ${REALM_URI}
+          jwk-set-uri: ${REALM_URI}/protocol/openid-connect/certs
   keycloak:
     realm-name: ${REALM_NAME}
     realm-url: ${REALM_AUTH_URL}
     client-id: ${KEYCLOAK_CLIENT_ID}
     client-secret: ${KEYCLOAK_CLIENT_SECRET}
+spring-docs:
+  api-docs:
+    path: /v1/api-docs
+  swagger-ui:
+    operationsSorter: method
+    tagsSorter: alpha
+  title: API Document
+  server-url: http://locahost:8081
+  version: v1.0
+  description-info: API DOCUMENT FOR KEYCLOAK + JWT
+  description-server: SERVER LOCAL

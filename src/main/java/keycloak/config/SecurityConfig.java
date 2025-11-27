@@ -24,7 +24,7 @@ public class SecurityConfig {
        http.csrf(AbstractHttpConfigurer::disable)
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .authorizeHttpRequests(
-                       auth -> auth.requestMatchers("/keycloak/api/v1/register","/keycloak/api/v1/internal-token").permitAll()
+                       auth -> auth.requestMatchers("/api/v1/register","/api/v1/internal-token","/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                .anyRequest().authenticated()
                );
        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);

@@ -58,6 +58,7 @@ public class IntrospectResponse {
         }
     }
 
+    @Builder.Default
     private List<String> realmRoles = new ArrayList<>();
 
     @JsonProperty("resource_access")
@@ -76,5 +77,6 @@ public class IntrospectResponse {
         }
     }
 
+    @Builder.Default
     private Map<String, List<String>> resourceRoles = new HashMap<>();
 }

@@ -34,16 +34,16 @@ public class TokenService {
     @Value("${spring.jwt.jwtSecretKey}")
     private String accessSecretKey;
 
-    @Value("${keycloak.auth-server-url}")
+    @Value("${spring.keycloak.realm-url}")
     private String authServerUrl;
 
-    @Value("${keycloak.realm}")
+    @Value("${spring.keycloak.realm-name}")
     private String realm;
 
-    @Value("${keycloak.resource}")
+    @Value("${spring.keycloak.client-id}")
     private String clientId;
 
-    @Value("${keycloak.credentials.secret}")
+    @Value("${spring.keycloak.client-secret}")
     private String clientSecret;
 
     private final RestTemplate restTemplate = new RestTemplate();

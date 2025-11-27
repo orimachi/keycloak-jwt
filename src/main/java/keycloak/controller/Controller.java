@@ -1,5 +1,8 @@
 package keycloak.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import keycloak.exception.CustomException;
@@ -14,10 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/")
 @RequiredArgsConstructor
+@Tag(name = "controller", description = "Controller project")
 public class Controller {
     private final KeycloakService keycloakService;
     private final TokenService tokenService;
     @PostMapping("register")
+    @Operation(method = "POST", summary = "Register User KeyCloak", description = "This api use for register new user")
     public APIResponse<Object> registerUser(@Valid @RequestBody RegisterUserRequest request){
         RegisterUserResponse response = keycloakService.registerUser(request);
         return APIResponse.builder().result(response).message("Register user API").build();
@@ -32,14 +37,14 @@ public class Controller {
 
     @DeleteMapping("delete")
     @PreAuthorize("hasRole('USER')")
-    public APIResponse<Object> deleteUser(String userId){
+    public APIResponse<Object> deleteUser(String userId ){
         keycloakService.deleteUser(userId);
         return APIResponse.builder().message("Delete user API").build();
     }
 
     @GetMapping("me/{username}")
     @PreAuthorize("hasRole('USER')")
-    public APIResponse<Object> getUserByUsername(@PathVariable @NotBlank(message = "Username is required for this API") String username){
+    public APIResponse<Object> getUserByUsername(@Parameter(description = "username user keycloak", required = true, example = "john") @PathVariable @NotBlank(message = "Username is required for this API") String username){
         FindUserByUsernameResponse<Object> response = keycloakService.getUserByUsername(username);
         return APIResponse.builder().result(response).message("Get user by username API").build();
     }
